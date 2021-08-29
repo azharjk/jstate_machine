@@ -7,8 +7,14 @@ public class Machine {
   private String content;
   private ArrayList<String> signature;
 
-  private int cursor = 0;
   private int size;
+  private int cursor = 0;
+  private StateType state = StateType.IDLE;
+
+  enum StateType {
+    IDLE,
+    EOS
+  }
 
   public Machine(String content) {
     this.content = Objects.requireNonNull(content);
@@ -22,7 +28,38 @@ public class Machine {
     return this.signature;
   }
 
-  // misc method
+  private void parse() {
+    String tmp = "";
+
+    // check if content is empty string
+    if (this.size == 0) {
+      this.signature.add(tmp);
+      return;
+    }
+
+    while (true) {
+      switch (this.state) {
+      case IDLE: {
+        // check for eos
+        if (this.cursor == this.size - 1) {
+          tmp += this.peek();
+          this.state = StateType.EOS;
+        }
+        else {
+          tmp += this.peek();
+          this.next();
+        }
+        break;
+      }
+      case EOS: {
+        this.signature.add(tmp);
+        return;
+      } // switch
+      }
+    }
+  }
+
+  // helper method
   private char peek() {
     return this.content.charAt(cursor);
   }
@@ -31,10 +68,5 @@ public class Machine {
     if (!(this.cursor >= this.size - 1)) {
       this.cursor++;
     }
-  }
-
-  private void parse() {
-    this.peek();
-    this.next();
   }
 }
