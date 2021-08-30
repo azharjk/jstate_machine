@@ -13,7 +13,8 @@ public class Machine {
 
   enum StateType {
     IDLE,
-    EOS
+    EOS,
+    HYPHEN
   }
 
   public Machine(String content) {
@@ -42,8 +43,17 @@ public class Machine {
       case IDLE: {
         // check for eos
         if (this.cursor == this.size - 1) {
-          tmp += this.peek();
+          // special case
+          if (!((this.content.charAt(this.size - 1) == '>') && (this.content.charAt(this.size - 2) == '-'))) {
+            tmp += this.peek();
+          }
           this.state = StateType.EOS;
+        }
+        // check for hyphen
+        else if (this.peek() == '-') {
+          tmp += this.peek();
+          this.state = StateType.HYPHEN;
+          this.next();
         }
         else {
           tmp += this.peek();
@@ -54,14 +64,29 @@ public class Machine {
       case EOS: {
         this.signature.add(tmp);
         return;
-      } // switch
       }
+      case HYPHEN: {
+        // check for arrow
+        if (this.peek() == '>') {
+          this.signature.add(tmp.substring(0, tmp.length() - 1));
+          tmp = "";
+          this.state = StateType.IDLE;
+          this.next();
+        }
+        else {
+          tmp += this.peek();
+          this.state = StateType.IDLE;
+          this.next();
+        }
+        break;
+      }
+      } // switch
     }
   }
 
   // helper method
   private char peek() {
-    return this.content.charAt(cursor);
+    return this.content.charAt(this.cursor);
   }
 
   private void next() {
