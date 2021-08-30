@@ -33,6 +33,7 @@ public class Machine {
     String tmp = "";
 
     // check if content is empty string
+    // special case
     if (this.size == 0) {
       this.signature.add(tmp);
       return;
