@@ -2,7 +2,7 @@ package com.github.azharjk.jstate_machine;
 
 public class App {
   public static void main(String[] args) {
-    Machine scanner = new Machine("------------------->");
+    Machine scanner = new Machine("(MEMEk->asdsda)->asdasd");
 
     System.out.println(scanner.getSignature().toString());
   }

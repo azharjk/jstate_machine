@@ -14,7 +14,8 @@ public class Machine {
   enum StateType {
     IDLE,
     EOS,
-    HYPHEN
+    HYPHEN,
+    LPAREN
   }
 
   public Machine(String content) {
@@ -56,6 +57,12 @@ public class Machine {
           this.state = StateType.HYPHEN;
           this.next();
         }
+        // check for lparen
+        else if (this.peek() == '(' && this.content.indexOf(')', this.cursor) != -1) {
+          tmp += this.peek();
+          this.state = StateType.LPAREN;
+          this.next();
+        }
         else {
           tmp += this.peek();
           this.next();
@@ -77,6 +84,19 @@ public class Machine {
         else {
           tmp += this.peek();
           this.state = StateType.IDLE;
+          this.next();
+        }
+        break;
+      }
+      case LPAREN: {
+        // check for rparen
+        if (this.peek() == ')') {
+          tmp += this.peek();
+          this.state = StateType.IDLE;
+          this.next();
+        }
+        else {
+          tmp += this.peek();
           this.next();
         }
         break;
