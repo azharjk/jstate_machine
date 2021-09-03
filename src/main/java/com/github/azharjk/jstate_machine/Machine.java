@@ -92,8 +92,13 @@ public class Machine {
         // check for rparen
         if (this.peek() == ')') {
           tmp += this.peek();
-          this.state = StateType.IDLE;
-          this.next();
+          if (this.cursor == this.size - 1) {
+            this.state = StateType.EOS;
+          }
+          else {
+            this.state = StateType.IDLE;
+            this.next();
+          }
         }
         else {
           tmp += this.peek();

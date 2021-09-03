@@ -103,4 +103,51 @@ public class MachineTest {
     Assert.assertEquals(2, size);
     this.assertMultipleSignature(size, expectedResultTest, resultToTest);
   }
+
+  @Test
+  public void shouldHandleCommonParenthesisBehavior() {
+    ArrayList<String> resultToTest = this.createMachineAndGetSignature("(java->machine)->jvm");
+    ArrayList<String> expectedResultTest = this.createExpectedResultSignature("(java->machine)", "jvm");
+    int size = resultToTest.size();
+
+    Assert.assertEquals(2, size);
+    this.assertMultipleSignature(size, expectedResultTest, resultToTest);
+  }
+
+  @Test
+  public void shouldHandleParenthesisSymbolAtEnd() {
+    ArrayList<String> resultToTest = this.createMachineAndGetSignature("(java->machine)");
+    Assert.assertEquals(1, resultToTest.size());
+    Assert.assertEquals("(java->machine)", resultToTest.get(0));
+  }
+
+  @Test
+  public void shouldHandleParenthesisAndArrowSymbolAtEnd() {
+    ArrayList<String> resultToTest = this.createMachineAndGetSignature("(java->machine)->");
+    ArrayList<String> expectedResultTest = this.createExpectedResultSignature("(java->machine)", "");
+    int size = resultToTest.size();
+
+    Assert.assertEquals(2, size);
+    this.assertMultipleSignature(size, expectedResultTest, resultToTest);
+  }
+
+  @Test
+  public void shouldHandleParenthesisWithoutClosing() {
+    ArrayList<String> resultToTest = this.createMachineAndGetSignature("(java->machine->good");
+    ArrayList<String> expectedResultTest = this.createExpectedResultSignature("(java", "machine", "good");
+    int size = resultToTest.size();
+
+    Assert.assertEquals(3, size);
+    this.assertMultipleSignature(size, expectedResultTest, resultToTest);
+  }
+
+  @Test
+  public void shouldHandleNestedParenthesisLikeUsually() {
+    ArrayList<String> resultToTest = this.createMachineAndGetSignature("(java->(machine))->good");
+    ArrayList<String> expectedResultTest = this.createExpectedResultSignature("(java->(machine))", "good");
+    int size = resultToTest.size();
+
+    Assert.assertEquals(2, size);
+    this.assertMultipleSignature(size, expectedResultTest, resultToTest);
+  }
 }
