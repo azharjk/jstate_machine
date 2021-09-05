@@ -5,6 +5,7 @@ import java.util.Objects;
 
 public class Machine {
   private String content;
+  private String lexeme;
   private ArrayList<String> signature;
 
   private int size;
@@ -20,6 +21,7 @@ public class Machine {
 
   public Machine(String content) {
     this.content = Objects.requireNonNull(content);
+    this.lexeme = "";
     this.signature = new ArrayList<String>();
     this.size = this.content.length();
 
@@ -31,12 +33,10 @@ public class Machine {
   }
 
   private void parse() {
-    String tmp = "";
-
     // check if content is empty string
     // special case
     if (this.size == 0) {
-      this.signature.add(tmp);
+      this.signature.add(this.lexeme);
       return;
     }
 
@@ -47,51 +47,44 @@ public class Machine {
         if (this.cursor == this.size - 1) {
           // special case
           if (!((this.content.charAt(this.size - 1) == '>') && (this.content.charAt(this.size - 2) == '-'))) {
-            tmp += this.peek();
+            this.consume();
           }
           this.state = StateType.EOS;
         }
         // check for hyphen
         else if (this.peek() == '-') {
-          tmp += this.peek();
-          this.state = StateType.HYPHEN;
-          this.next();
+          this.consumeTo(StateType.HYPHEN);
         }
         // check for lparen
         else if (this.peek() == '(' && this.content.indexOf(')', this.cursor) != -1) {
-          tmp += this.peek();
-          this.state = StateType.LPAREN;
-          this.next();
+          this.consumeTo(StateType.LPAREN);
         }
         else {
-          tmp += this.peek();
-          this.next();
+          this.consumeTo(this.state);
         }
         break;
       }
       case EOS: {
-        this.signature.add(tmp);
+        this.signature.add(this.lexeme);
         return;
       }
       case HYPHEN: {
         // check for arrow
         if (this.peek() == '>') {
-          this.signature.add(tmp.substring(0, tmp.length() - 1));
-          tmp = "";
+          this.signature.add(this.lexeme.substring(0, this.lexeme.length() - 1));
+          this.lexeme = "";
           this.state = StateType.IDLE;
           this.next();
         }
         else {
-          tmp += this.peek();
-          this.state = StateType.IDLE;
-          this.next();
+          this.consumeTo(StateType.IDLE);
         }
         break;
       }
       case LPAREN: {
         // check for rparen
         if (this.peek() == ')') {
-          tmp += this.peek();
+          this.consume();
           if (this.cursor == this.size - 1) {
             this.state = StateType.EOS;
           }
@@ -101,8 +94,7 @@ public class Machine {
           }
         }
         else {
-          tmp += this.peek();
-          this.next();
+          this.consumeTo(this.state);
         }
         break;
       }
@@ -119,5 +111,15 @@ public class Machine {
     if (!(this.cursor >= this.size - 1)) {
       this.cursor++;
     }
+  }
+
+  private void consume() {
+    this.lexeme += this.peek();
+  }
+
+  private void consumeTo(StateType newState) {
+    this.consume();
+    this.state = newState;
+    this.next();
   }
 }
