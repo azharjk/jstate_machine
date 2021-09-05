@@ -52,11 +52,11 @@ public class Machine {
           this.state = StateType.EOS;
         }
         // check for hyphen
-        else if (this.peek() == '-') {
+        else if (this.isCurrentChar('-')) {
           this.consumeTo(StateType.HYPHEN);
         }
         // check for lparen
-        else if (this.peek() == '(' && this.content.indexOf(')', this.cursor) != -1) {
+        else if (this.isCurrentChar('(') && this.content.indexOf(')', this.cursor) != -1) {
           this.consumeTo(StateType.LPAREN);
         }
         else {
@@ -70,7 +70,7 @@ public class Machine {
       }
       case HYPHEN: {
         // check for arrow
-        if (this.peek() == '>') {
+        if (this.isCurrentChar('>')) {
           this.signature.add(this.lexeme.substring(0, this.lexeme.length() - 1));
           this.lexeme = "";
           this.state = StateType.IDLE;
@@ -83,7 +83,7 @@ public class Machine {
       }
       case LPAREN: {
         // check for rparen
-        if (this.peek() == ')') {
+        if (this.isCurrentChar(')')) {
           this.consume();
           if (this.isEOS()) {
             this.state = StateType.EOS;
@@ -125,5 +125,9 @@ public class Machine {
 
   private boolean isEOS() {
     return this.cursor == this.size - 1;
+  }
+
+  private boolean isCurrentChar(char c) {
+    return this.peek() == c;
   }
 }
