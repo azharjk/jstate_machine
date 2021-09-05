@@ -44,7 +44,7 @@ public class Machine {
       switch (this.state) {
       case IDLE: {
         // check for eos
-        if (this.cursor == this.size - 1) {
+        if (this.isEOS()) {
           // special case
           if (!((this.content.charAt(this.size - 1) == '>') && (this.content.charAt(this.size - 2) == '-'))) {
             this.consume();
@@ -85,7 +85,7 @@ public class Machine {
         // check for rparen
         if (this.peek() == ')') {
           this.consume();
-          if (this.cursor == this.size - 1) {
+          if (this.isEOS()) {
             this.state = StateType.EOS;
           }
           else {
@@ -121,5 +121,9 @@ public class Machine {
     this.consume();
     this.state = newState;
     this.next();
+  }
+
+  private boolean isEOS() {
+    return this.cursor == this.size - 1;
   }
 }
